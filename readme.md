@@ -19,7 +19,7 @@ buildscript {
 apply plugin: 'FatJarPlugin'
 
 fatJarExt {
-	//jar路径或者module名
+	//输入数组，改成你的jar路径或者module名
     paths = ["D:\\github\\MyApplication\\libone\\build\\intermediates\\bundles\\release\\classes.jar",
              "libtwo"]
     //最后output的jar名
