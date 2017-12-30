@@ -31,6 +31,8 @@ class FatJarTask extends DefaultTask {
             addFilesFromJars(paths, jarOutputStream)
         } catch (Exception e) {
             e.printStackTrace()
+            println("build " + outputPath + " failed!!!")
+            return
         } finally {
             if (jarOutputStream != null) {
                 jarOutputStream.close()
@@ -52,11 +54,23 @@ class FatJarTask extends DefaultTask {
         String path = projectPath
         File file = new File(path)
         String[] fileNames = file.list()
+        LinkedList<String> queue = new LinkedList<>()
         for (String name : fileNames) {
-            if (name.equals(module)) {
-                String curPath = path + sep + name
-                if (isModule(curPath)) {
+            queue.add(path + sep + name)
+        }
+        while (queue.size() > 0) {
+            String curPath = queue.removeFirst()
+            if (isModule(curPath)) {
+                String temp = new String(curPath)
+                String[] names = temp.replaceAll("\\\\", "/").split("/");
+                if (module.equals(names[names.length - 1])) {
                     return curPath + pathSuffix
+                }
+            } else {
+                File file1 = new File(curPath)
+                String[] names = file1.list()
+                for (String name : names) {
+                    queue.add(curPath + sep + name)
                 }
             }
         }

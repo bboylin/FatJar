@@ -20,6 +20,7 @@ apply plugin: 'FatJarPlugin'
 
 fatJarExt {
 	//输入数组，改成你的jar路径或者module名
+	//对module会进行广度优先搜索匹配jar路径
     paths = ["D:\\github\\MyApplication\\libone\\build\\intermediates\\bundles\\release\\classes.jar",
              "libtwo"]
     //最后output的jar名
