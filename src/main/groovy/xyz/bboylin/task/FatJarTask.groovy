@@ -20,12 +20,9 @@ class FatJarTask extends DefaultTask {
         def manifest = getManifest()
         JarOutputStream jarOutputStream = null
         try {
-            completePaths()
-            for (String path : paths) {
-                if (path == null) {
-                    println("build " + outputPath + " failed!!!")
-                    return
-                }
+            if (!completePaths()) {
+                println("build " + outputPath + " failed!!!")
+                return
             }
             jarOutputStream = new JarOutputStream(new FileOutputStream(outputPath), manifest)
             addFilesFromJars(paths, jarOutputStream)
@@ -45,9 +42,12 @@ class FatJarTask extends DefaultTask {
         for (int i = 0; i < paths.length; i++) {
             String path = paths[i]
             if (!path.contains(".jar")) {
-                paths[i] = getCompletePath(path)
+                if ((paths[i] = getCompletePath(path)) == null) {
+                    return false
+                }
             }
         }
+        return true
     }
 
     def getCompletePath(String module) {
