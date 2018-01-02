@@ -2,7 +2,6 @@ package xyz.bboylin.plugin
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
 import xyz.bboylin.task.FatJarTask
 
 class FatJarPlugin implements Plugin<Project> {

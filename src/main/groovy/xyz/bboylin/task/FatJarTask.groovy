@@ -42,15 +42,18 @@ class FatJarTask extends DefaultTask {
         for (int i = 0; i < paths.length; i++) {
             String path = paths[i]
             if (!path.contains(".jar")) {
-                if ((paths[i] = getCompletePath(path)) == null) {
+                paths[i] = projectPath + sep + path.replace(":", sep)
+                if (!isModule(paths[i])) {
+                    println(paths[i] + " is not a module !!")
                     return false
                 }
+                paths[i] += pathSuffix
             }
         }
         return true
     }
 
-    def getCompletePath(String module) {
+/*    def getCompletePath(String module) {
         String path = projectPath
         File file = new File(path)
         String[] fileNames = file.list()
@@ -76,17 +79,11 @@ class FatJarTask extends DefaultTask {
         }
         println("cannot find module : " + module)
         return null
-    }
+    }*/
 
     def isModule(String path) {
-        File file = new File(path)
-        String[] names = file.list()
-        for (String name : names) {
-            if (name.equals("build.gradle")) {
-                return true
-            }
-        }
-        return false
+        File file = new File(path + sep + "build.gradle")
+        return file.exists()
     }
 
     def addFilesFromJars(String[] paths, JarOutputStream jarOutputStream) {
