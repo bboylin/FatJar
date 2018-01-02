@@ -7,6 +7,7 @@ import java.util.jar.JarEntry
 import java.util.jar.JarFile
 import java.util.jar.JarOutputStream
 import java.util.jar.Manifest
+import java.util.zip.ZipException
 
 class FatJarTask extends DefaultTask {
     def paths
@@ -65,7 +66,7 @@ class FatJarTask extends DefaultTask {
             String curPath = queue.removeFirst()
             if (isModule(curPath)) {
                 String temp = new String(curPath)
-                String[] names = temp.replaceAll("\\\\", "/").split("/");
+                String[] names = temp.replaceAll("\\\\", "/").split("/")
                 if (module.equals(names[names.length - 1])) {
                     return curPath + pathSuffix
                 }
@@ -90,7 +91,7 @@ class FatJarTask extends DefaultTask {
         for (String path : paths) {
             if (!new File(path).exists()) {
                 println("create fat jar failed,missing " + path)
-                break;
+                break
             }
             addFilesFromJar(path, jarOutputStream)
         }
@@ -101,35 +102,42 @@ class FatJarTask extends DefaultTask {
         Enumeration<?> entries = jarFile.entries()
         while (entries.hasMoreElements()) {
             JarEntry entry = (JarEntry) entries.nextElement()
-            if (entry.isDirectory() || entry.getName().toUpperCase().startsWith("META_INF")) {
-                continue;
+            if (entry.isDirectory() || entry.getName().toUpperCase().startsWith("META-INF")) {
+                continue
             }
 
-            InputStream inputStream = jarFile.getInputStream(entry);
-            copyDataToJar(inputStream, jarOutputStream, entry.getName());
+            InputStream inputStream = jarFile.getInputStream(entry)
+            copyDataToJar(inputStream, jarOutputStream, entry.getName())
         }
         println("added " + path)
         jarFile.close()
     }
 
     def copyDataToJar(InputStream inputStream, JarOutputStream jarOutputStream, String entryName) {
-        int bufferSize;
-        byte[] buffer = new byte[1024];
+        int bufferSize
+        byte[] buffer = new byte[1024]
 
-        jarOutputStream.putNextEntry(new JarEntry(entryName));
+        try {
+            jarOutputStream.putNextEntry(new JarEntry(entryName))
+        } catch (ZipException e) {
+            e.printStackTrace()
+            inputStream.close()
+            jarOutputStream.closeEntry()
+            return
+        }
         while ((bufferSize = inputStream.read(buffer, 0, buffer.length)) != -1) {
-            jarOutputStream.write(buffer, 0, bufferSize);
+            jarOutputStream.write(buffer, 0, bufferSize)
         }
 
-        inputStream.close();
-        jarOutputStream.closeEntry();
+        inputStream.close()
+        jarOutputStream.closeEntry()
     }
 
     def getManifest() {
-        def manifest = new Manifest();
-        def attribute = manifest.getMainAttributes();
-        attribute.putValue("Manifest-Version", "1.0");
-        attribute.putValue("Created-By", "FatJarTask@bboylin");
-        return manifest;
+        def manifest = new Manifest()
+        def attribute = manifest.getMainAttributes()
+        attribute.putValue("Manifest-Version", "1.0")
+        attribute.putValue("Created-By", "FatJarTask@bboylin")
+        return manifest
     }
 }

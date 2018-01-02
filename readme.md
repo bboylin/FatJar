@@ -3,7 +3,7 @@
 
 #### usage：
 
-1.下载[FatJar-1.0.1.jar](https://github.com/bboylin/FatJar/blob/master/FatJar-1.0.1.jar)，放置于项目根目录
+1.下载[FatJar-1.0.2.jar](https://github.com/bboylin/FatJar/blob/master/FatJar-1.0.2.jar)，放置于项目根目录
 
 2.在project的build.gradle中添加依赖和配置：
 ```groovy
@@ -11,7 +11,7 @@ buildscript {
     ......
     dependencies {
         ......
-        classpath files('FatJar-1.0.1.jar')
+        classpath files('FatJar-1.0.2.jar')
     }
 }
 
