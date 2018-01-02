@@ -26,6 +26,7 @@ fatJarTask.dependsOn({
     return tasks.toArray()
 })
 
+//可配置项
 fatJarExt {
 	//这里可配置需要打包的module名和需要加入的第三方jar
     paths = ["D:\\github\\okhttp.jar",
@@ -50,7 +51,7 @@ fatJarExt {
     //是否是Unix系统，是的话改为true或者忽略此项
     isUnix = false
 }
-
+```
 3.项目根目录下命令行执行`gradlew fatJar`即可。
 
 ![](https://github.com/bboylin/FatJar/blob/master/cmd.png)
