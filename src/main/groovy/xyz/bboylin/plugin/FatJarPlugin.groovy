@@ -9,8 +9,10 @@ class FatJarPlugin implements Plugin<Project> {
     public static final String TASK_NAME = "fatJarTask"
     public static final String UNIX_SEP = "/"
     public static final String WINDOWS_SEP = "\\"
-    public static final String WINDOWS_SUFFIX = "\\build\\intermediates\\bundles\\release\\classes.jar"
-    public static final String UNIX_SUFFIX = "/build/intermediates/bundles/release/classes.jar"
+    public static final String WINDOWS_JAR_TAIL = "\\build\\intermediates\\bundles\\release\\classes.jar"
+    public static final String UNIX_JAR_TAIL = "/build/intermediates/bundles/release/classes.jar"
+    public static final String UNIX_ASSETS_TAIL = "/src/main/assets"
+    public static final String WINDOWS_ASSETS_TAIL = "\\src\\main\\assets"
 
     @Override
     void apply(Project project) {
@@ -19,11 +21,13 @@ class FatJarPlugin implements Plugin<Project> {
         task.doFirst {
             String rootPath = project.rootDir.absolutePath
             String sep = ext.isUnix ? UNIX_SEP : WINDOWS_SEP
-            task.paths = ext.paths
-            task.outputPath = rootPath + sep + ext.jarName
+            task.jarPaths = ext.jarPaths
+            task.outputPath = rootPath + sep + ext.output
             task.projectPath = rootPath
             task.sep = sep
-            task.pathSuffix = ext.isUnix ? UNIX_SUFFIX : WINDOWS_SUFFIX
+            task.jarPathTail = ext.isUnix ? UNIX_JAR_TAIL : WINDOWS_JAR_TAIL
+            task.assetsPaths = ext.assetsPaths
+            task.assetsPathTail = ext.isUnix ? UNIX_ASSETS_TAIL : WINDOWS_ASSETS_TAIL
         }
     }
 }

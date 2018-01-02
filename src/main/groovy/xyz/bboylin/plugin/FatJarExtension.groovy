@@ -1,7 +1,8 @@
 package xyz.bboylin.plugin
 
 class FatJarExtension {
-    String[] paths
-    String jarName
+    String[] jarPaths
+    String[] assetsPaths
+    String output
     boolean isUnix = true
 }

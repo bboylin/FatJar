@@ -10,11 +10,15 @@ import java.util.jar.Manifest
 import java.util.zip.ZipException
 
 class FatJarTask extends DefaultTask {
-    def paths
+    def jarPaths
+    def assetsPaths
     def outputPath
     def projectPath
     def sep
-    def pathSuffix
+    def jarPathTail
+    def assetsPathTail
+    private static final String META_INF = "META-INF"
+    private static final String ASSETS_PREFIX = "assets/"
 
     @TaskAction
     def createFatJar() {
@@ -26,7 +30,12 @@ class FatJarTask extends DefaultTask {
                 return
             }
             jarOutputStream = new JarOutputStream(new FileOutputStream(outputPath), manifest)
-            addFilesFromJars(paths, jarOutputStream)
+            if (assetsPaths != null && assetsPaths.size() > 0) {
+                for (String assetPath : assetsPaths) {
+                    addAssets(new File(assetPath), ASSETS_PREFIX, jarOutputStream)
+                }
+            }
+            addFilesFromJars(jarPaths, jarOutputStream)
         } catch (Exception e) {
             e.printStackTrace()
             println("build " + outputPath + " failed!!!")
@@ -39,16 +48,42 @@ class FatJarTask extends DefaultTask {
         println("build " + outputPath + " success!!!")
     }
 
+    def addAssets(File file, String assetsEntryPrefix, JarOutputStream jarOutputStream) {
+        if (!file.exists() || !file.isDirectory()) {
+            println("assets does not exist or is not Directory!!!")
+            return
+        }
+        File[] files = file.listFiles()
+        for (File f : files) {
+            addAssetsFile(f, assetsEntryPrefix, jarOutputStream)
+        }
+    }
+
+    def addAssetsFile(File file, String assetsEntryPrefix, JarOutputStream jarOutputStream) {
+        if (file.isDirectory()) {
+            addAssets(file, assetsEntryPrefix + file.getName() + "/", jarOutputStream)
+        } else {
+            InputStream inputStream = new FileInputStream(file);
+            copyDataToJar(inputStream, jarOutputStream, assetsEntryPrefix + file.getName());
+            println("added " + file.getAbsolutePath())
+        }
+    }
+
     def completePaths() {
-        for (int i = 0; i < paths.length; i++) {
-            String path = paths[i]
+        for (int i = 0; i < jarPaths.length; i++) {
+            String path = jarPaths[i]
             if (!path.contains(".jar")) {
-                paths[i] = projectPath + sep + path.replace(":", sep)
-                if (!isModule(paths[i])) {
-                    println(paths[i] + " is not a module !!")
+                jarPaths[i] = projectPath + sep + path.replace(":", sep)
+                if (!isModule(jarPaths[i])) {
+                    println(jarPaths[i] + " is not a module !!")
                     return false
                 }
-                paths[i] += pathSuffix
+                jarPaths[i] += jarPathTail
+            }
+        }
+        if (assetsPaths != null && assetsPaths.size() > 0) {
+            for (int i = 0; i < assetsPaths.length; i++) {
+                assetsPaths[i] = projectPath + sep + assetsPaths[i].replace(":", sep) + assetsPathTail
             }
         }
         return true
@@ -102,7 +137,7 @@ class FatJarTask extends DefaultTask {
         Enumeration<?> entries = jarFile.entries()
         while (entries.hasMoreElements()) {
             JarEntry entry = (JarEntry) entries.nextElement()
-            if (entry.isDirectory() || entry.getName().toUpperCase().startsWith("META-INF")) {
+            if (entry.isDirectory() || entry.getName().toUpperCase().startsWith(META_INF)) {
                 continue
             }
 

@@ -3,7 +3,7 @@
 
 #### usage：
 
-1.下载[FatJar-1.0.2.jar](https://raw.githubusercontent.com/bboylin/FatJar/92235f63415db99f8de6494786d3cf39063ba0fc/FatJar-1.0.2.jar)，放置于项目根目录
+1.下载[FatJar-1.0.3.jar]()，放置于项目根目录
 
 2.在project的build.gradle中添加依赖和配置：
 ```groovy
@@ -11,14 +11,14 @@ buildscript {
     ......
     dependencies {
         ......
-        classpath files('FatJar-1.0.2.jar')
+        classpath files('FatJar-1.0.3.jar')
     }
 }
 
 apply plugin: 'FatJarPlugin'
 fatJarTask.dependsOn({
     def tasks = new ArrayList<>()
-    fatJarExt.paths.each {
+    fatJarExt.jarPaths.each {
         if (!it.contains(".jar")) {
             tasks.add(":" + it + ":assembleRelease")
         }
@@ -29,11 +29,13 @@ fatJarTask.dependsOn({
 //可配置项
 fatJarExt {
 	//这里可配置需要打包的module名和需要加入的第三方jar
-    paths = ["D:\\github\\okhttp.jar",
+    jarPaths = ["D:\\github\\okhttp.jar",
              "libtwo",
              "commonlib"]
+    //配置需要添加assets的module名，没有可忽略此项
+    assetsPaths = ["libtwo","commonlib"]
     //最后output的jar名
-    jarName = "fat.jar"
+    output = "fat.jar"
     //是否是Unix系统，是的话改为true或者删掉此项
     isUnix = false
 }
@@ -41,14 +43,17 @@ fatJarExt {
 注意：如果你的module不在项目根目录下，比如`D:\MyApplication\components\libone`和`D:\MyApplication\components\player\bdplayer`，`D:\MyApplication`是我的项目根目录，那你不能直接写"libone"，要改为"components:libone"，即module用相对路径。示例：
 ```groovy
 fatJarExt {
-    paths = ["D:\\github\\okhttp.jar"
+    jarPaths = ["D:\\github\\okhttp.jar"
              ,"libtwo",
              ,"commonlib"
              ,"components:libone"
              ,"components:player:bdplayer"]
+    assetsPaths = ["libtwo"
+                    ,"components:libone"
+                    ,"components:player:bdplayer"]
     //最后output的jar名
-    jarName = "fat.jar"
-    //是否是Unix系统，是的话改为true或者忽略此项
+    output = "fat.jar"
+    //是否是Unix系统，是的话改为true或者删掉此项
     isUnix = false
 }
 ```
