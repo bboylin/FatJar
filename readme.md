@@ -3,7 +3,7 @@
 
 #### usage：
 
-1.下载[FatJar-1.0.3.jar]()，放置于项目根目录
+1.下载[FatJar-1.0.3.jar](https://raw.githubusercontent.com/bboylin/FatJar/3bbccfd00cd087d256bb44f5c8c44181d96bc49f/FatJar-1.0.3.jar)，放置于项目根目录
 
 2.在project的build.gradle中添加依赖和配置：
 ```groovy
