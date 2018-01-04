@@ -10,13 +10,24 @@ import java.util.jar.Manifest
 import java.util.zip.ZipException
 
 class FatJarTask extends DefaultTask {
+    //manifest版本
+    def version
+    //manifest作者
+    def owner
+    //jar路径数组
     def jarPaths
+    //assets路径数组
     def assetsPaths
+    //输出文件路径
     def outputPath
+    //project路径
     def projectPath
+    //分隔符，unix:"/"，windows:"\\"
     def sep
-    def jarPathTail
-    def assetsPathTail
+    //jar路径后缀
+    def jarPathSuffix
+    //assets路径后缀
+    def assetsPathSuffix
     private static final String META_INF = "META-INF"
     private static final String ASSETS_PREFIX = "assets/"
 
@@ -78,44 +89,16 @@ class FatJarTask extends DefaultTask {
                     println(jarPaths[i] + " is not a module !!")
                     return false
                 }
-                jarPaths[i] += jarPathTail
+                jarPaths[i] += jarPathSuffix
             }
         }
         if (assetsPaths != null && assetsPaths.size() > 0) {
             for (int i = 0; i < assetsPaths.length; i++) {
-                assetsPaths[i] = projectPath + sep + assetsPaths[i].replace(":", sep) + assetsPathTail
+                assetsPaths[i] = projectPath + sep + assetsPaths[i].replace(":", sep) + assetsPathSuffix
             }
         }
         return true
     }
-
-/*    def getCompletePath(String module) {
-        String path = projectPath
-        File file = new File(path)
-        String[] fileNames = file.list()
-        LinkedList<String> queue = new LinkedList<>()
-        for (String name : fileNames) {
-            queue.add(path + sep + name)
-        }
-        while (queue.size() > 0) {
-            String curPath = queue.removeFirst()
-            if (isModule(curPath)) {
-                String temp = new String(curPath)
-                String[] names = temp.replaceAll("\\\\", "/").split("/")
-                if (module.equals(names[names.length - 1])) {
-                    return curPath + pathSuffix
-                }
-            } else {
-                File file1 = new File(curPath)
-                String[] names = file1.list()
-                for (String name : names) {
-                    queue.add(curPath + sep + name)
-                }
-            }
-        }
-        println("cannot find module : " + module)
-        return null
-    }*/
 
     def isModule(String path) {
         File file = new File(path + sep + "build.gradle")
@@ -171,8 +154,38 @@ class FatJarTask extends DefaultTask {
     def getManifest() {
         def manifest = new Manifest()
         def attribute = manifest.getMainAttributes()
-        attribute.putValue("Manifest-Version", "1.0")
-        attribute.putValue("Created-By", "FatJarTask@bboylin")
+        attribute.putValue("Manifest-Version", version)
+        attribute.putValue("Created-By", owner)
         return manifest
     }
+
+    //1.0.0里的广度优先搜索，1.0.2之后不需要了。
+/*    def getCompletePath(String module) {
+        String path = projectPath
+        File file = new File(path)
+        String[] fileNames = file.list()
+        LinkedList<String> queue = new LinkedList<>()
+        for (String name : fileNames) {
+            queue.add(path + sep + name)
+        }
+        while (queue.size() > 0) {
+            String curPath = queue.removeFirst()
+            if (isModule(curPath)) {
+                String temp = new String(curPath)
+                String[] names = temp.replaceAll("\\\\", "/").split("/")
+                if (module.equals(names[names.length - 1])) {
+                    return curPath + pathSuffix
+                }
+            } else {
+                File file1 = new File(curPath)
+                String[] names = file1.list()
+                for (String name : names) {
+                    queue.add(curPath + sep + name)
+                }
+            }
+        }
+        println("cannot find module : " + module)
+        return null
+    }*/
+
 }
