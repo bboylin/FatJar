@@ -22,14 +22,12 @@ class FatJarTask extends DefaultTask {
     def outputPath
     //project路径
     def projectPath
-    //分隔符，unix:"/"，windows:"\\"
-    def sep
     //jar路径后缀
-    def jarPathSuffix
-    //assets路径后缀
-    def assetsPathSuffix
+    def jarPathSuffix = "/build/intermediates/bundles/release/classes.jar"
     private static final String META_INF = "META-INF"
     private static final String ASSETS_PREFIX = "assets/"
+    public static final String SEP = "/"
+    public static final String ASSETS_SUFFIX = "/src/main/assets"
 
     @TaskAction
     def createFatJar() {
@@ -72,7 +70,7 @@ class FatJarTask extends DefaultTask {
 
     def addAssetsFile(File file, String assetsEntryPrefix, JarOutputStream jarOutputStream) {
         if (file.isDirectory()) {
-            addAssets(file, assetsEntryPrefix + file.getName() + "/", jarOutputStream)
+            addAssets(file, assetsEntryPrefix + file.getName() + SEP, jarOutputStream)
         } else {
             InputStream inputStream = new FileInputStream(file);
             copyDataToJar(inputStream, jarOutputStream, assetsEntryPrefix + file.getName());
@@ -84,7 +82,7 @@ class FatJarTask extends DefaultTask {
         for (int i = 0; i < jarPaths.length; i++) {
             String path = jarPaths[i]
             if (!path.contains(".jar")) {
-                jarPaths[i] = projectPath + sep + path.replace(":", sep)
+                jarPaths[i] = projectPath + SEP + path.replace(":", SEP)
                 if (!isModule(jarPaths[i])) {
                     println(jarPaths[i] + " is not a module !!")
                     return false
@@ -94,14 +92,14 @@ class FatJarTask extends DefaultTask {
         }
         if (assetsPaths != null && assetsPaths.size() > 0) {
             for (int i = 0; i < assetsPaths.length; i++) {
-                assetsPaths[i] = projectPath + sep + assetsPaths[i].replace(":", sep) + assetsPathSuffix
+                assetsPaths[i] = projectPath + SEP + assetsPaths[i].replace(":", SEP) + ASSETS_SUFFIX
             }
         }
         return true
     }
 
     def isModule(String path) {
-        File file = new File(path + sep + "build.gradle")
+        File file = new File(path + SEP + "build.gradle")
         return file.exists()
     }
 
@@ -166,7 +164,7 @@ class FatJarTask extends DefaultTask {
         String[] fileNames = file.list()
         LinkedList<String> queue = new LinkedList<>()
         for (String name : fileNames) {
-            queue.add(path + sep + name)
+            queue.add(path + SEP + name)
         }
         while (queue.size() > 0) {
             String curPath = queue.removeFirst()
@@ -180,7 +178,7 @@ class FatJarTask extends DefaultTask {
                 File file1 = new File(curPath)
                 String[] names = file1.list()
                 for (String name : names) {
-                    queue.add(curPath + sep + name)
+                    queue.add(curPath + SEP + name)
                 }
             }
         }

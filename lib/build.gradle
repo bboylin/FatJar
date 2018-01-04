@@ -18,7 +18,7 @@ publish {
     groupId = 'xyz.bboylin'         //compile引用时的第1部分groupId
     artifactId = 'FatJarPlugin'     //compile引用时的第2部分项目名
     repoName='FatJarPlugin'
-    publishVersion = '1.0.4'    //compile引用时的第3部分版本号
+    publishVersion = '1.0.5'    //compile引用时的第3部分版本号
     desc = 'a gradle plugin to pack modules and jars into a single jar'
     website = 'https://github.com/bboylin/FatJar'
 }
