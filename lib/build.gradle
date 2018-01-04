@@ -1,7 +1,5 @@
 apply plugin: 'groovy'
-apply plugin: 'com.github.dcendents.android-maven'
-
-group='com.github.bboylin'
+apply plugin: 'com.novoda.bintray-release'
 
 repositories {
     mavenCentral()
@@ -14,3 +12,13 @@ dependencies {
 
 sourceCompatibility = JavaVersion.VERSION_1_7
 targetCompatibility = JavaVersion.VERSION_1_7
+
+publish {
+    userOrg = 'bboylin'      //bintray注册的用户名
+    groupId = 'xyz.bboylin'         //compile引用时的第1部分groupId
+    artifactId = 'FatJarPlugin'     //compile引用时的第2部分项目名
+    repoName='FatJarPlugin'
+    publishVersion = '1.0.4'    //compile引用时的第3部分版本号
+    desc = 'a gradle plugin to pack modules and jars into a single jar'
+    website = 'https://github.com/bboylin/FatJar'
+}

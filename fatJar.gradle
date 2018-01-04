@@ -1,0 +1,12 @@
+apply plugin: 'FatJarPlugin'
+
+fatJarTask.dependsOn({
+    def tasks = new ArrayList<>()
+    def taskName = fatJarExt.isDebug ? ":assembleDebug" : ":assembleRelease"
+    fatJarExt.jarPaths.each {
+        if (!it.contains(".jar")) {
+            tasks.add(":" + it + taskName)
+        }
+    }
+    return tasks.toArray()
+})
