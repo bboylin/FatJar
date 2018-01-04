@@ -4,7 +4,8 @@
 [ ![Download](https://api.bintray.com/packages/bboylin/FatJarPlugin/FatJarPlugin/images/download.svg) ](https://bintray.com/bboylin/FatJarPlugin/FatJarPlugin/_latestVersion)
 #### usage：
 
-1.下载`fatJar.gradle`放置于project根目录
+1.下载[fatJar.gradle](https://raw.githubusercontent.com/bboylin/FatJar/1b3906361e68eac3c30283b6dc7224ee3f673a56/fatJar.gradle)放置于project根目录
+
 2.在project的build.gradle中添加依赖和配置：
 ```groovy
 apply from: 'fatJar.gradle'
