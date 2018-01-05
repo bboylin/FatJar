@@ -10,10 +10,6 @@
 ```groovy
 apply from: 'fatJar.gradle'
 buildscript {
-    repositories {
-        ......
-        maven { url 'https://dl.bintray.com/bboylin/FatJarPlugin/' }
-    }
     dependencies {
         classpath 'xyz.bboylin:FatJarPlugin:1.0.5'
     }
